@@ -6,30 +6,44 @@ require("dotenv").config();
 const getMailTransporter = () => {
     const provider = process.env.EMAIL_PROVIDER || "gmail";
     
-    const config = {
-        host: provider === "gmail" ? process.env.GMAIL_SMTP_HOST : process.env.SMTP_HOST,
-        port: provider === "gmail" ? process.env.GMAIL_SMTP_PORT : process.env.SMTP_PORT,
-        secure: provider === "gmail" ? true : false,
-        auth: {
-            user: provider === "gmail" ? process.env.GMAIL_EMAIL_USER : process.env.EMAIL_USER,
-            pass: provider === "gmail" ? process.env.GMAIL_EMAIL_PASS : process.env.EMAIL_PASS
-        }
-    };
+    let config;
+    
+    if (provider === "gmail") {
+        config = {
+            host: process.env.GMAIL_SMTP_HOST,
+            port: process.env.GMAIL_SMTP_PORT,
+            secure: true,
+            auth: {
+                user: process.env.GMAIL_EMAIL_USER,
+                pass: process.env.GMAIL_EMAIL_PASS
+            }
+        };
+    } else if (provider === "hostinger") {
+        config = {
+            host: "smtp.hostinger.com",
+            port: 465,
+            secure: true,
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        };
+    } else {
+        // Default or other provider
+        config = {
+            host: process.env.SMTP_HOST,
+            port: process.env.SMTP_PORT,
+            secure: process.env.SMTP_PORT === "465",
+            auth: {
+                user: process.env.EMAIL_USER,
+                pass: process.env.EMAIL_PASS
+            }
+        };
+    }
     
     console.log(`📧 Configuring email with ${provider.toUpperCase()} provider for contact forms`);
     return nodemailer.createTransport(config);
 };
-
-const transporter = getMailTransporter();
-
-// Test SMTP Connection
-transporter.verify((error, success) => {
-    if (error) {
-        console.error("🚨 Contact SMTP Connection Error:", error);
-    } else {
-        console.log("✅ Contact SMTP Server is Ready");
-    }
-});
 
 // Handle Contact Form Submission
 exports.submitContactForm = async (req, res) => {
