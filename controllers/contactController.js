@@ -26,7 +26,13 @@ const getMailTransporter = () => {
             auth: {
                 user: process.env.EMAIL_USER,
                 pass: process.env.EMAIL_PASS
-            }
+            },
+            // Add these settings to improve connection reliability
+            tls: {
+                rejectUnauthorized: false
+            },
+            connectionTimeout: 60000,
+            greetingTimeout: 30000
         };
     } else {
         // Default or other provider
@@ -44,6 +50,18 @@ const getMailTransporter = () => {
     console.log(`📧 Configuring email with ${provider.toUpperCase()} provider for contact forms`);
     return nodemailer.createTransport(config);
 };
+
+// Initialize the transporter - This line is what was missing!
+const transporter = getMailTransporter();
+
+// Test SMTP Connection when the server starts
+transporter.verify((error, success) => {
+    if (error) {
+        console.error("🚨 SMTP Connection Error:", error);
+    } else {
+        console.log("✅ SMTP Server is Ready");
+    }
+});
 
 // Handle Contact Form Submission
 exports.submitContactForm = async (req, res) => {
