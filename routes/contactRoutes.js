@@ -4,7 +4,8 @@ const { submitContactForm, testEmail, subscribeNewsletter } = require("../contro
 const router = express.Router();
 
 // Contact form submission
-router.post("/", submitContactForm);
+router.post("/contact", submitContactForm);
+router.post("/contact/", submitContactForm);
 
 // Newsletter subscription
 router.post("/newsletter", subscribeNewsletter);
