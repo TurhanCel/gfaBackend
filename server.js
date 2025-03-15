@@ -9,6 +9,7 @@ const mysql = require('mysql2/promise');
 const authRoutes = require("./routes/authRoutes");
 const contactRoutes = require("./routes/contactRoutes");
 const eventRoutes = require("./routes/eventRoutes");
+const articleRoutes = require("./routes/articleRoutes"); // Added article routes
 const { createTables } = require("./models/init");
 require("dotenv").config();
 
@@ -107,6 +108,7 @@ async function initializeDatabase() {
 app.use("/api/auth", authRoutes);
 app.use("/api", contactRoutes);
 app.use("/api/events", eventRoutes);
+app.use("/api/articles", articleRoutes); // Added article routes
 
 // Test route
 app.get("/api/health", async (req, res) => {
